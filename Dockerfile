@@ -54,9 +54,9 @@ RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && chmod 755 /usr/local/bin/python3 \
     && ln -s python3 /usr/local/bin/python
 
-COPY --from=build /out/magpie /magpie
+COPY --from=build /out/magpie /opt/magpie/magpie
 # magpie on PATH, so `magpie accounts add …` works in that terminal
-RUN ln -s /magpie /usr/local/bin/magpie
+RUN ln -s /opt/magpie/magpie /usr/local/bin/magpie
 USER nonroot
 COPY --from=build --chown=65532:65532 /config /config
 
@@ -78,9 +78,9 @@ ENV HOME=/config/home \
 VOLUME /config
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD ["/magpie", "healthcheck"]
+    CMD ["/opt/magpie/magpie", "healthcheck"]
 
-EXPOSE 3425 3430
+EXPOSE 3430
 
-ENTRYPOINT ["/magpie"]
-CMD ["serve"]
+ENTRYPOINT ["/opt/magpie/magpie"]
+CMD ["serve", "--web=0.0.0.0:3430"]
